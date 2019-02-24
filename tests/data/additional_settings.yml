@@ -1,0 +1,9 @@
+additional_settings:
+  - 'value1'
+  - 'value2'
+
+var_from_env: 'file value'
+
+var:
+  from:
+    env: 'file value'
