@@ -9,20 +9,11 @@ from yaml import load
 
 g_logger = getLogger(__name__)
 
-# TODO: remove all f strings
-# TODO: custom splitter ( __ )
-# TODO: add to settings all vars with special format SOME_WORD__VAR1, SOME_WORD__VAR2
-# TODO: test that variable values correctly redefined from common and production/development
-
 
 DEFAULT_ENV = 'APP_ENV'
 DEFAULT_CONFIGS_PATH = path.join(path.dirname(__file__), 'config')
 DEFAULT_ENV_PREFIX = 'SETTINGS'
-
-
-# class DictConfig(dict):
-#     def __getattr__(self, item):
-#         return self[item]
+DEFAULT_SPLITTER = '__'
 
 
 class Singleton(type):
@@ -54,11 +45,10 @@ class AppSettings(metaclass=Singleton):
                 self._load_config(path.join(config_location, cfg_file))
 
         self._load_config(path.join(config_location, 'settings', '{}.yml'.format(self._env_value)))
-
-        # self._redefine_variables()
+        self._redefine_variables()
 
     def __repr__(self):
-        return dumps(self.__dict__, sort_keys=True, indent=2)
+        return dumps(self.__config, sort_keys=True, indent=2)
 
     def _load_config(self, config_file):
         """ Load yml config from file """
@@ -73,26 +63,31 @@ class AppSettings(metaclass=Singleton):
                            '\nPerhaps you set incorrect %s variable or file not exist!', config_file, self._env_name)
             exit(1)
 
-    # def _redefine_variables(self):
-    #     for env_name, env_val in environ.items():
-    #         if env_name.startswith(DEFAULT_ENV_PREFIX):
-    #             print(env_name, env_val)
+    def _redefine_variables(self):
+        for env_name, env_val in environ.items():
+            if env_name.startswith(DEFAULT_ENV_PREFIX):
+                g_logger.debug('Found env variable: %s = %s', env_name, env_val)
+                keys = env_name.replace(DEFAULT_ENV_PREFIX, '').lstrip(DEFAULT_SPLITTER).lower().split(DEFAULT_SPLITTER)
+                keys.reverse()
+                self._set_config_value(keys, env_val, self.__config)
 
     def __getattr__(self, item):
         g_logger.debug('Get attribute value: %s', item)
-        keys = item.split('__')
+        keys = item.split(DEFAULT_SPLITTER)
         keys.reverse()
         val = self._get_config_value(keys, self.__config)
         if val is not None:
-            try:
-                # redefine variable only if exist in settings
-                val = environ[item.upper()]
-                g_logger.warning('Redefine %s from env variables.', item)  # TODO: move redefining to load function
-                return val
-            except KeyError:
-                return val
+            return val
         else:
-            raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{item}'")
+            raise AttributeError("'{}' object has no attribute '{}'".format(self.__class__.__name__, item))
+
+    def _set_config_value(self, keys, value, cfg=None):
+        g_logger.debug("Set value '%s' for key: %s", value, keys)
+        key = keys.pop()
+        if keys:
+            self._set_config_value(keys, value, cfg.setdefault(key, {}))
+        else:
+            cfg[key] = value
 
     def _get_config_value(self, keys, cfg=None):
         """ Get value
@@ -101,7 +96,7 @@ class AppSettings(metaclass=Singleton):
         :param cfg: config
         :return: config value
         """
-        g_logger.debug('Keys: %s', keys)
+        g_logger.debug('Get value for key: %s', keys)
         key = keys.pop()
         if key in cfg:
             if keys:

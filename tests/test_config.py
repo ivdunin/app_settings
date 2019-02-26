@@ -2,6 +2,7 @@ import pytest
 
 from os import environ
 
+
 @pytest.mark.usefixtures("init_default_configs")
 @pytest.mark.parametrize(
         'set_environ', [
@@ -67,9 +68,14 @@ def test_redefine_variables_from_file(clear_config_instance):
 @pytest.mark.usefixtures("init_default_configs")
 def test_redefine_variables_from_env(clear_config_instance):
     env_val = 'environment value'
-    environ['VAR_FROM_ENV'] = env_val
-    environ['VAR__FROM__ENV'] = env_val
+    environ['SETTINGS__VAR__FROM__ENV'] = env_val
     cfg = clear_config_instance()
-    assert env_val == cfg.var_from_env
     assert env_val == cfg.var__from__env
 
+
+@pytest.mark.usefixtures("init_default_configs")
+def test_use_env_variables(clear_config_instance):
+    env_val = 'environment value'
+    environ['SETTINGS__CUSTOM__NEW__VAR'] = env_val
+    cfg = clear_config_instance()
+    assert env_val == cfg.custom__new__var
