@@ -16,6 +16,16 @@ DEFAULT_ENV_PREFIX = 'SETTINGS'
 DEFAULT_SPLITTER = '__'
 
 
+class CustomDict(dict):
+    """ Dict which allow to access to dict values using dot, e.g. my_dict.key.key1 instead my_dict['key']['key1'] """
+    def __getattr__(self, item):
+        val = self[item]
+        if isinstance(val, dict):
+            return CustomDict(val)
+        else:
+            return val
+
+
 class Singleton(type):
     _instances = {}
 
@@ -26,9 +36,9 @@ class Singleton(type):
 
 
 class AppSettings(metaclass=Singleton):
-    """ Config class """
+    """ Config class (singleton) """
     def __init__(self, **kwargs):
-        self.__config = {}
+        self.__config = CustomDict()
 
         try:
             self._env_name = kwargs.get('env_name', DEFAULT_ENV).upper()
@@ -72,14 +82,7 @@ class AppSettings(metaclass=Singleton):
                 self._set_config_value(keys, env_val, self.__config)
 
     def __getattr__(self, item):
-        g_logger.debug('Get attribute value: %s', item)
-        keys = item.split(DEFAULT_SPLITTER)
-        keys.reverse()
-        val = self._get_config_value(keys, self.__config)
-        if val is not None:
-            return val
-        else:
-            raise AttributeError("'{}' object has no attribute '{}'".format(self.__class__.__name__, item))
+        return self.__config.__getattr__(item)
 
     def _set_config_value(self, keys, value, cfg=None):
         g_logger.debug("Set value '%s' for key: %s", value, keys)

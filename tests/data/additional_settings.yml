@@ -5,5 +5,5 @@ additional_settings:
 var_from_env: 'file value'
 
 var:
-  from:
+  get_from:
     env: 'file value'

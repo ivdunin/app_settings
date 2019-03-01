@@ -52,27 +52,27 @@ def test_read_variables(clear_config_instance):
         ]
 
     cfg = clear_config_instance()
-    assert "common-774a3530-36df-11e9-b0b2-0028f8351bd7" == cfg.common__key1
-    assert common_list == cfg.common__common_list
-    assert "dev-774a3530-36df-11e9-b0b2-0028f8351bd7" == cfg.development__key1
-    assert multilevel == cfg.multilevel__level2__level22
+    assert "common-774a3530-36df-11e9-b0b2-0028f8351bd7" == cfg.common.key1
+    assert common_list == cfg.common.common_list
+    assert "dev-774a3530-36df-11e9-b0b2-0028f8351bd7" == cfg.development.key1
+    assert multilevel == cfg.multilevel.level2.level22
 
 
 @pytest.mark.usefixtures("init_default_configs")
 def test_redefine_variables_from_file(clear_config_instance):
     """ Test that variables from config/*.yml redefined by settings/*.yml variables """
     cfg = clear_config_instance()
-    assert ['3', '4'] == cfg.redefine__list
-    assert "development.yml" == cfg.redefine__val
+    assert ['3', '4'] == cfg.redefine.list
+    assert "development.yml" == cfg.redefine.val
 
 
 @pytest.mark.usefixtures("init_default_configs")
 def test_redefine_variables_from_env(clear_config_instance):
     """ Test that variables defined in file correctly redefined from ENV """
     env_val = 'environment value'
-    environ['SETTINGS__VAR__FROM__ENV'] = env_val
+    environ['SETTINGS__VAR__GET_FROM__ENV'] = env_val
     cfg = clear_config_instance()
-    assert env_val == cfg.var__from__env
+    assert env_val == cfg.var.get_from.env
 
 
 @pytest.mark.usefixtures("init_default_configs")
@@ -81,4 +81,4 @@ def test_use_env_variables(clear_config_instance):
     env_val = 'environment value'
     environ['SETTINGS__CUSTOM__NEW__VAR'] = env_val
     cfg = clear_config_instance()
-    assert env_val == cfg.custom__new__var
+    assert env_val == cfg.custom.new.var
