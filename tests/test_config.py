@@ -39,7 +39,7 @@ def test_load_config_from_custom_location(clear_config_instance, set_environ, mo
 
 @pytest.mark.usefixtures("init_default_configs")
 def test_read_variables(clear_config_instance):
-    """ Test  """
+    """ Test get variable value by path """
     common_list = [
         "common-ba339256-f57e-4bb8-9914-bf3ec7bb1201",
         "common-9ead97e4-3ab9-4c5b-90ab-1caee3e44747",
@@ -60,6 +60,7 @@ def test_read_variables(clear_config_instance):
 
 @pytest.mark.usefixtures("init_default_configs")
 def test_redefine_variables_from_file(clear_config_instance):
+    """ Test that variables from config/*.yml redefined by settings/*.yml variables """
     cfg = clear_config_instance()
     assert ['3', '4'] == cfg.redefine__list
     assert "development.yml" == cfg.redefine__val
@@ -67,6 +68,7 @@ def test_redefine_variables_from_file(clear_config_instance):
 
 @pytest.mark.usefixtures("init_default_configs")
 def test_redefine_variables_from_env(clear_config_instance):
+    """ Test that variables defined in file correctly redefined from ENV """
     env_val = 'environment value'
     environ['SETTINGS__VAR__FROM__ENV'] = env_val
     cfg = clear_config_instance()
@@ -75,6 +77,7 @@ def test_redefine_variables_from_env(clear_config_instance):
 
 @pytest.mark.usefixtures("init_default_configs")
 def test_use_env_variables(clear_config_instance):
+    """ Test that variables from ENV line accessible in config (even if they not defined in config files) """
     env_val = 'environment value'
     environ['SETTINGS__CUSTOM__NEW__VAR'] = env_val
     cfg = clear_config_instance()
