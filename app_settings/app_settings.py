@@ -49,6 +49,8 @@ class AppSettings(metaclass=Singleton):
         g_logger.info('Config initialized! Environment variable: %s', self._env_value)
 
         config_location = kwargs.get('configs_path', DEFAULT_CONFIGS_PATH)
+        self._env_prefix = kwargs.get('prefix', DEFAULT_ENV_PREFIX).upper()
+        self._env_splitter = kwargs.get('splitter', DEFAULT_SPLITTER)
 
         for cfg_file in listdir(config_location):
             if path.isfile(path.join(config_location, cfg_file)) and cfg_file.lower().endswith('.yml'):
@@ -75,9 +77,13 @@ class AppSettings(metaclass=Singleton):
 
     def _redefine_variables(self):
         for env_name, env_val in environ.items():
-            if env_name.startswith(DEFAULT_ENV_PREFIX):
+            if env_name.startswith(self._env_prefix):
                 g_logger.debug('Found env variable: %s = %s', env_name, env_val)
-                keys = env_name.replace(DEFAULT_ENV_PREFIX, '').lstrip(DEFAULT_SPLITTER).lower().split(DEFAULT_SPLITTER)
+                keys = env_name.\
+                    replace(self._env_prefix, '').\
+                    lstrip(self._env_splitter).\
+                    lower().\
+                    split(self._env_splitter)
                 keys.reverse()
                 self._set_config_value(keys, env_val, self.__config)
 
