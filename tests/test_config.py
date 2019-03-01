@@ -67,18 +67,57 @@ def test_redefine_variables_from_file(clear_config_instance):
 
 
 @pytest.mark.usefixtures("init_default_configs")
-def test_redefine_variables_from_env(clear_config_instance):
+@pytest.mark.parametrize(
+        'set_environ', [
+            pytest.param('SETTINGS__VAR__GET_FROM__ENV:environment value', id='Export SETTINGS__VAR__GET_FROM__ENV'),
+        ],
+        indirect=['set_environ']
+    )
+def test_redefine_variables_from_env(clear_config_instance, set_environ):
     """ Test that variables defined in file correctly redefined from ENV """
-    env_val = 'environment value'
-    environ['SETTINGS__VAR__GET_FROM__ENV'] = env_val
+    _, val = set_environ
     cfg = clear_config_instance()
-    assert env_val == cfg.var.get_from.env
+    assert val == cfg.var.get_from.env
 
 
 @pytest.mark.usefixtures("init_default_configs")
-def test_use_env_variables(clear_config_instance):
+@pytest.mark.parametrize(
+        'set_environ', [
+            pytest.param('SETTINGS__CUSTOM__NEW__VAR:environment value', id='Export SETTINGS__CUSTOM__NEW__VAR'),
+        ],
+        indirect=['set_environ']
+    )
+def test_use_env_variables(clear_config_instance, set_environ):
     """ Test that variables from ENV line accessible in config (even if they not defined in config files) """
-    env_val = 'environment value'
-    environ['SETTINGS__CUSTOM__NEW__VAR'] = env_val
+    _, val = set_environ
     cfg = clear_config_instance()
+    assert val == cfg.custom.new.var
+
+
+@pytest.mark.usefixtures("init_default_configs")
+@pytest.mark.parametrize(
+        'set_environ', [
+            pytest.param('MYPREFIX__CUSTOM__NEW__VAR:environment value', id='Export MYPREFIX__CUSTOM__NEW__VAR'),
+        ],
+        indirect=['set_environ']
+    )
+def test_redefine_variable_prefix(clear_config_instance, set_environ):
+    """ Test that user can redefine variable prefix (default prefix SETTINGS) """
+    _, env_val = set_environ
+    cfg = clear_config_instance(prefix='myprefix')
+    assert env_val == cfg.custom.new.var
+
+
+@pytest.mark.usefixtures("init_default_configs")
+@pytest.mark.parametrize(
+        'set_environ', [
+            pytest.param('SETTINGS_._._CUSTOM_._._NEW_._._VAR:environment value',
+                         id='Export SETTINGS_._._CUSTOM_._._NEW_._._VAR'),
+        ],
+        indirect=['set_environ']
+    )
+def test_redefine_variable_splitter(clear_config_instance, set_environ):
+    """ Test that user can redefine variable splitter (default splitter "__") """
+    _, env_val = set_environ
+    cfg = clear_config_instance(splitter='_._._')
     assert env_val == cfg.custom.new.var
