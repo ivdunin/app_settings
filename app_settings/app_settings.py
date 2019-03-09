@@ -98,23 +98,6 @@ class AppSettings(metaclass=Singleton):
         else:
             cfg[key] = value
 
-    def _get_config_value(self, keys, cfg=None):
-        """ Get value
-
-        :param keys: keys list
-        :param cfg: config
-        :return: config value
-        """
-        g_logger.debug('Get value for key: %s', keys)
-        key = keys.pop()
-        if key in cfg:
-            if keys:
-                return self._get_config_value(keys, cfg.get(key))
-            else:
-                return cfg.get(key)
-        else:
-            return None
-
     def current_env(self):
         """ Get env of loaded config """
         return self._env_value

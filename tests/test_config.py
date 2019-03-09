@@ -1,4 +1,5 @@
 import pytest
+from re import search, compile
 
 
 @pytest.mark.parametrize(
@@ -122,3 +123,23 @@ def test_redefine_variable_splitter(clear_config_instance, set_environ, move_con
     _, env_val = set_environ
     cfg = clear_config_instance(splitter='_._._', configs_path=move_config_to_custom_dir)
     assert env_val == cfg.custom.new.var
+
+
+def test_no_config_file(clear_config_instance, caplog):
+    """ Test that FileNotFoundError correctly handled and logger.error message shown """
+    pattern = compile(r'Config file "[./a-z]+" not found!'
+                      r'\nPerhaps you set incorrect APP_ENV variable or file not exist!')
+
+    caplog.clear()
+    with pytest.raises(SystemExit):
+        clear_config_instance(configs_path='../')
+
+    err_messages = []
+
+    for rec in caplog.records:
+        if rec.levelname == 'ERROR':
+            err_messages.append(rec.message)
+
+    res = search(pattern, ' '.join(err_messages))
+    assert res, "Error message not found in: '{0}'".format(' '.join(err_messages))
+
