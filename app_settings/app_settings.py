@@ -61,7 +61,8 @@ class AppSettings(metaclass=Singleton):
             g_logger.error('Cannot find config dir: %s', e)
             exit(1)
 
-        self._redefine_variables()
+        if kwargs.get('use_env', True):
+            self._redefine_variables()
 
     def __repr__(self):
         return dumps(self.__config, sort_keys=True, indent=2)
@@ -81,16 +82,16 @@ class AppSettings(metaclass=Singleton):
 
     def _redefine_variables(self):
         """ Search for ENV variables with prefix and add them into config dict """
-        for env_name, env_val in environ.items():
-            if env_name.startswith(self._env_prefix):
-                g_logger.debug('Found env variable: %s = %s', env_name, env_val)
-                keys = env_name.\
-                    replace(self._env_prefix, '').\
-                    lstrip(self._env_splitter).\
-                    lower().\
-                    split(self._env_splitter)
-                keys.reverse()
-                self._set_config_value(keys, env_val, self.__config)
+        for env_name in [key for key in environ.keys() if key.startswith(self._env_prefix)]:
+            env_val = environ[env_name]
+            g_logger.debug('Found env variable: %s = %s', env_name, env_val)
+            keys = env_name.\
+                replace(self._env_prefix, '').\
+                lstrip(self._env_splitter).\
+                lower().\
+                split(self._env_splitter)
+            keys.reverse()
+            self._set_config_value(keys, env_val, self.__config)
 
     def __getattr__(self, item):
         return self.__config.__getattr__(item)
