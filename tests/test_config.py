@@ -162,3 +162,14 @@ def test_no_config_file(clear_config_instance, caplog):
     res = search(pattern, ' '.join(err_messages))
     assert res, "Error message not found in: '{0}'".format(' '.join(err_messages))
 
+
+@pytest.mark.parametrize(
+        'set_environ', [
+            pytest.param('SETTINGS__USE_ENV:true', id='Turn off environment variables redefine'),
+        ],
+        indirect=['set_environ']
+    )
+def test_flag_use_env_off(clear_config_instance, set_environ, move_config_to_custom_dir):
+    """ Test that variables not overriding when use_env=False """
+    cfg = clear_config_instance(use_env=False, configs_path=move_config_to_custom_dir)
+    assert 'false' == cfg.use_env
