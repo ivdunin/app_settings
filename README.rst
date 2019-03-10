@@ -121,6 +121,14 @@ Also it is possible to setup environment variable splitter (default:
     print(cfg.my_var)  # 'test'
     print(cfg.level1.redefined)  # 'val'
 
+If you don't need to set/redefine settings from environment variables,
+use ``use_env`` flag.
+
+.. code:: python
+
+    from app_settings import AppSettings
+    cfg = AppSettings(use_env=False)
+
 Config path
 ~~~~~~~~~~~
 
@@ -146,4 +154,3 @@ TODO
 1. Add reload feature
 2. Do not raise error if setting not found in dictionary
 3. Load all yml by mask ``./config/settings/${APP_ENV}.*.yml``
-4. Add flag ``use_env``. If false, do not check env variables.

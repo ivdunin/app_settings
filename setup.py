@@ -5,7 +5,7 @@ with open("README.rst", "r") as fh:
 
 setup(
     name='app_settings',
-    version='1.0',
+    version='1.1',
     description='YAML for application configuration, lite version (inspired by Ruby gem "config")',
     url='https://github.com/ivdunin/app_settings',
     author='Ilya Dunin',
