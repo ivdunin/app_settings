@@ -6,7 +6,7 @@
 import pytest
 
 from distutils.dir_util import copy_tree, remove_tree
-from os import path, makedirs, environ
+from os import path, makedirs, environ, chdir, getcwd
 from tempfile import mkdtemp
 
 from app_settings.app_settings import AppSettings, Singleton, DEFAULT_ENV
@@ -30,14 +30,17 @@ def init_default_configs():
     if not path.exists(default_path):
         makedirs(default_path)
 
+    old_cur_dir = getcwd()
+    chdir(path.dirname(default_path))
+
     copy_tree(path.join(CURRENT_DIR, 'data'), default_path)
 
     yield
 
+    chdir(old_cur_dir)
     remove_tree(default_path)
 
 
-# @pytest.fixture(params=[path.join(CURRENT_DIR, 'config')], ids=['Move config to custom path'])
 @pytest.fixture
 def move_config_to_custom_dir(request):
     """ Move configs to custom location """

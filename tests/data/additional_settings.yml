@@ -7,3 +7,5 @@ var_from_env: 'file value'
 var:
   get_from:
     env: 'file value'
+
+yml_order: 'additional_settings.yml'

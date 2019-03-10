@@ -1,7 +1,23 @@
+# Compiled python modules.
 *.pyc
-*.egg-info/
-*.log*
+
+# Setuptools distribution folder.
+/dist/
+/build
+
+# Python egg metadata, regenerated from source files by setuptools.
+/*.egg-info
+
+# Allure results
+tests/results/*
+
+# IDEA configs
 .idea/
+
+# pytest specific
+.pytest_cache
 __pycache__
-results/*
 .coverage
+
+# Other
+*.log

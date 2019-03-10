@@ -35,6 +35,24 @@ def test_load_config_from_default_location(clear_config_instance):
     assert 'development' == cfg.current_env(), 'Incorrect config variable set!'
 
 
+def test_load_config_when_no_default_location(clear_config_instance, caplog):
+    """ Test that correctly handled case when no config dir """
+    pattern = compile(r'Cannot find config dir:')
+
+    caplog.clear()
+    with pytest.raises(SystemExit):
+        clear_config_instance(configs_path='fake')
+
+    err_messages = []
+
+    for rec in caplog.records:
+        if rec.levelname == 'ERROR':
+            err_messages.append(rec.message)
+
+    res = search(pattern, ' '.join(err_messages))
+    assert res, "Error message not found in: '{0}'".format(' '.join(err_messages))
+
+
 def test_load_config_from_custom_location(clear_config_instance, set_environ, move_config_to_custom_dir):
     """ Test that config correctly loaded from custom location """
     env_name, env_value = set_environ
@@ -68,8 +86,9 @@ def test_read_variables(clear_config_instance, move_config_to_custom_dir):
 def test_redefine_variables_from_file(clear_config_instance, move_config_to_custom_dir):
     """ Test that variables from config/*.yml redefined by settings/*.yml variables """
     cfg = clear_config_instance(configs_path=move_config_to_custom_dir)
-    assert ['3', '4'] == cfg.redefine.list
-    assert "development.yml" == cfg.redefine.val
+    assert ['3', '4'] == cfg.redefine.list, "settings.yml not redefined by settings/development.yml"
+    assert "development.yml" == cfg.redefine.val, "settings.yml not redefined by settings/development.yml"
+    assert "settings.yml" == cfg.yml_order, "additional_settings.yml not redefined by settings.yml"
 
 
 @pytest.mark.parametrize(
