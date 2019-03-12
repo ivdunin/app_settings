@@ -1,10 +1,8 @@
 common:
-  key1: 'common-774a3530-36df-11e9-b0b2-0028f8351bd7'
-  key2: 'common-8017df5a-36df-11e9-b0b2-0028f8351bd7'
-  common_list:
+  key: 'common-774a3530-36df-11e9-b0b2-0028f8351bd7'
+  list:
     - 'common-ba339256-f57e-4bb8-9914-bf3ec7bb1201'
     - 'common-9ead97e4-3ab9-4c5b-90ab-1caee3e44747'
-    - 'common-88b3f0d0-3cad-4d58-8b36-1c6b5b2c68ae'
   not_redefine: 'value from common.yml'
 
 redefine:

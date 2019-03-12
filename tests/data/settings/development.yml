@@ -1,10 +1,7 @@
 development:
-  key1: 'dev-774a3530-36df-11e9-b0b2-0028f8351bd7'
-  key2: 'dev-8017df5a-36df-11e9-b0b2-0028f8351bd7'
-  development_list:
+  key: 'dev-774a3530-36df-11e9-b0b2-0028f8351bd7'
+  list:
     - 'dev-ba339256-f57e-4bb8-9914-bf3ec7bb1201'
-    - 'dev-9ead97e4-3ab9-4c5b-90ab-1caee3e44747'
-    - 'dev-88b3f0d0-3cad-4d58-8b36-1c6b5b2c68ae'
 
 redefine:
   val: 'development.yml'

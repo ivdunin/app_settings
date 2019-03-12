@@ -68,7 +68,6 @@ def test_read_variables(clear_config_instance, move_config_to_custom_dir):
     common_list = [
         "common-ba339256-f57e-4bb8-9914-bf3ec7bb1201",
         "common-9ead97e4-3ab9-4c5b-90ab-1caee3e44747",
-        "common-88b3f0d0-3cad-4d58-8b36-1c6b5b2c68ae"
       ]
 
     multilevel = [
@@ -77,9 +76,9 @@ def test_read_variables(clear_config_instance, move_config_to_custom_dir):
         ]
 
     cfg = clear_config_instance(configs_path=move_config_to_custom_dir)
-    assert "common-774a3530-36df-11e9-b0b2-0028f8351bd7" == cfg.common.key1
-    assert common_list == cfg.common.common_list
-    assert "dev-774a3530-36df-11e9-b0b2-0028f8351bd7" == cfg.development.key1
+    assert "common-774a3530-36df-11e9-b0b2-0028f8351bd7" == cfg.common.key
+    assert common_list == cfg.common.list
+    assert "dev-774a3530-36df-11e9-b0b2-0028f8351bd7" == cfg.development.key
     assert multilevel == cfg.multilevel.level2.level22
 
 
