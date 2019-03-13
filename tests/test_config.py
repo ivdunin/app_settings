@@ -38,7 +38,7 @@ def test_load_config_from_default_location(clear_config_instance):
 
 def test_load_config_when_no_default_location(clear_config_instance, caplog):
     """ Test that correctly handled case when no config dir """
-    pattern = compile(r'Cannot find config dir:')
+    pattern = compile(r'Cannot find config dir/or config files:')
 
     caplog.clear()
     with pytest.raises(SystemExit):
@@ -144,13 +144,13 @@ def test_redefine_variable_splitter(clear_config_instance, set_environ, move_con
     assert env_val == cfg.custom.new.var
 
 
-def test_no_config_file(clear_config_instance, caplog):
-    """ Test that FileNotFoundError correctly handled and logger.error message shown """
+def test_no_config_file(clear_config_instance, move_settings_yml, caplog):
+    """ Test that INFO message shown, if no config/settings/*.yml loaded """
     pattern = compile(r'"development\*.yml" configs not found!')
 
     caplog.clear()
 
-    clear_config_instance(configs_path='../')
+    clear_config_instance(configs_path=move_settings_yml)
 
     info_messages = []
 

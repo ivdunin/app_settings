@@ -1,19 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Copyright (c) 2018 Dunin Ilya.
-""" Module description """
+""" Set of fixtures for AppSettings tests """
 
 import pytest
 
 from distutils.dir_util import copy_tree, remove_tree
 from os import path, makedirs, environ, chdir, getcwd
+from shutil import copyfile
 from tempfile import mkdtemp
 
 from app_settings.app_settings import AppSettings, Singleton, DEFAULT_ENV
 
 CURRENT_DIR = path.dirname(__file__)
-
-# TODO test empty config files
 
 
 @pytest.fixture
@@ -42,14 +41,27 @@ def init_default_configs():
 
 
 @pytest.fixture
+def move_settings_yml():
+    """ Create only config/settings.yml file """
+    custom_path = path.join(mkdtemp(), 'config')
+
+    if not path.exists(custom_path):
+        makedirs(custom_path)
+
+    copyfile(path.join(CURRENT_DIR, 'data', 'settings.yml'), path.join(custom_path, 'settings.yml'))
+
+    yield custom_path
+
+    remove_tree(custom_path)
+
+
+@pytest.fixture
 def move_config_to_custom_dir(request):
     """ Move configs to custom location """
     try:
         custom_path = request.param
     except AttributeError:
         custom_path = path.join(mkdtemp(), 'config')
-
-    print('create dir: {}'.format(custom_path))
 
     if not path.exists(custom_path):
         makedirs(custom_path)
