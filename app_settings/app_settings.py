@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """ YAML Config Module """
 
+from glob import glob
 from json import dumps
 from logging import getLogger
 from os import path, environ, listdir, getcwd
@@ -56,7 +57,14 @@ class AppSettings(metaclass=Singleton):
                 if path.isfile(path.join(config_location, cfg_file)) and cfg_file.lower().endswith('.yml'):
                     self._load_config(path.join(config_location, cfg_file))
 
-            self._load_config(path.join(config_location, 'settings', '{}.yml'.format(self._env_value)))
+            env_configs = glob(path.join(config_location, 'settings', '{}*.yml'.format(self._env_value)))
+
+            if env_configs:
+                for yml_file in env_configs:
+                    self._load_config(yml_file)
+            else:
+                g_logger.info('"{}*.yml" configs not found!'.format(self._env_value))
+
         except FileNotFoundError as e:
             g_logger.error('Cannot find config dir: %s', e)
             exit(1)
