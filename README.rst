@@ -18,18 +18,19 @@ Create sample app with following structure:
     /my_app
       my_app.py
       /config
-        settings.yml  # required file
+        settings.yml  # at least one *.yml file required
         additional_settings.yml
-        /settings
+        /settings  # use this only in case if you need different settings for your environments
           production.yml
-          stage.yml
-          development.yml  # required file   
+          production.db.yml
+          development.yml
+          development.db.yml   
 
 ``AppSettings`` -- singleton, so it is not possible to create more than
 one instance of config object.
 
-By default, script will try to load all ``./config/*.yml`` and
-``./config/settings/${APP_ENV}.yml`` configuration files.
+By default, script will try to load all ``./config/*.yml`` and, if exist
+``./config/settings/${APP_ENV}*.yml`` configuration files.
 
 Take note, that all variables defined in ``./config/*.yml`` files will
 be overridden by variables from ``./config/settings/${APP_ENV}.yml``.
@@ -37,6 +38,10 @@ be overridden by variables from ``./config/settings/${APP_ENV}.yml``.
 Also, ``./config/*.yml`` loaded in alphabetical order, so if you will
 define variable VAR in ``additional_settings.yml`` it will be redefined
 by VAR from ``settings.yml``.
+
+If you have settings, which not depends on the environment, simply use
+``./config/{file name}.yml``; In case, when you need settings, which
+depends on the environment, use ``./config/settings/{ENV}.yml``.
 
 Environment (development/stage/production etc)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -153,4 +158,3 @@ TODO
 
 1. Add reload feature
 2. Do not raise error if setting not found in dictionary
-3. Load all yml by mask ``./config/settings/${APP_ENV}.*.yml``
