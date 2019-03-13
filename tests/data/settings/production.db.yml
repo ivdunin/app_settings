@@ -1,0 +1,3 @@
+db:
+  name: 'prod-name'
+  password: 'prod-password'

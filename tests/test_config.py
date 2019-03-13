@@ -21,6 +21,7 @@ def test_load_config_upon_env_name(clear_config_instance, set_environ, move_conf
 
     assert cfg.common, 'Settings not loaded!'
     assert cfg.additional_settings, "Additional settings not loaded!"
+    assert cfg.db, "Not all {}.*.yml files loaded!".format(env_value)
     assert cfg.__getattr__(env_value), '{} config not loaded!'.format(env_value)
     assert env_value == cfg.current_env(), 'Incorrect config variable set!'
 
@@ -145,21 +146,20 @@ def test_redefine_variable_splitter(clear_config_instance, set_environ, move_con
 
 def test_no_config_file(clear_config_instance, caplog):
     """ Test that FileNotFoundError correctly handled and logger.error message shown """
-    pattern = compile(r'Config file "[./a-z]+" not found!'
-                      r'\nPerhaps you set incorrect APP_ENV variable or file not exist!')
+    pattern = compile(r'"development\*.yml" configs not found!')
 
     caplog.clear()
-    with pytest.raises(SystemExit):
-        clear_config_instance(configs_path='../')
 
-    err_messages = []
+    clear_config_instance(configs_path='../')
+
+    info_messages = []
 
     for rec in caplog.records:
-        if rec.levelname == 'ERROR':
-            err_messages.append(rec.message)
+        if rec.levelname == 'INFO':
+            info_messages.append(rec.message)
 
-    res = search(pattern, ' '.join(err_messages))
-    assert res, "Error message not found in: '{0}'".format(' '.join(err_messages))
+    res = search(pattern, ' '.join(info_messages))
+    assert res, "INFO message not found in: '{0}'".format(' '.join(info_messages))
 
 
 @pytest.mark.parametrize(
