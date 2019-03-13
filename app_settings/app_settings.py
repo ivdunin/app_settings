@@ -5,7 +5,7 @@
 from glob import glob
 from json import dumps
 from logging import getLogger
-from os import path, environ, listdir, getcwd
+from os import path, environ, getcwd
 from yaml import load
 
 g_logger = getLogger(__name__)
@@ -52,22 +52,22 @@ class AppSettings(metaclass=Singleton):
         self._env_prefix = kwargs.get('prefix', DEFAULT_ENV_PREFIX).upper()
         self._env_splitter = kwargs.get('splitter', DEFAULT_SPLITTER)
 
-        try:
-            for cfg_file in sorted(listdir(config_location)):
-                if path.isfile(path.join(config_location, cfg_file)) and cfg_file.lower().endswith('.yml'):
-                    self._load_config(path.join(config_location, cfg_file))
+        configs = glob(path.join(config_location, '*.yml'))
 
-            env_configs = glob(path.join(config_location, 'settings', '{}*.yml'.format(self._env_value)))
-
-            if env_configs:
-                for yml_file in env_configs:
-                    self._load_config(yml_file)
-            else:
-                g_logger.info('"{}*.yml" configs not found!'.format(self._env_value))
-
-        except FileNotFoundError as e:
-            g_logger.error('Cannot find config dir: %s', e)
+        if configs:
+            for cfg_file in sorted(configs):
+                self._load_config(cfg_file)
+        else:
+            g_logger.error('Cannot find config dir/or config files: %s', path.join(config_location, '*.yml'))
             exit(1)
+
+        env_configs = glob(path.join(config_location, 'settings', '{}*.yml'.format(self._env_value)))
+
+        if env_configs:
+            for yml_file in sorted(env_configs):
+                self._load_config(yml_file)
+        else:
+            g_logger.info('"{}*.yml" configs not found!'.format(self._env_value))
 
         if kwargs.get('use_env', True):
             self._redefine_variables()
@@ -78,15 +78,10 @@ class AppSettings(metaclass=Singleton):
     def _load_config(self, config_file):
         """ Load yml config from file """
         g_logger.debug('Load config file: %s', config_file)
-        try:
-            with open(config_file) as fp:
-                cfg = load(fp)
-                if cfg:
-                    self.__config.update(cfg)
-        except FileNotFoundError:
-            g_logger.error('Config file "%s" not found!'
-                           '\nPerhaps you set incorrect %s variable or file not exist!', config_file, self._env_name)
-            exit(1)
+        with open(config_file) as fp:
+            cfg = load(fp)
+            if cfg:
+                self.__config.update(cfg)
 
     def _redefine_variables(self):
         """ Search for ENV variables with prefix and add them into config dict """
