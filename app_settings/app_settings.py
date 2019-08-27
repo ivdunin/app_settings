@@ -4,11 +4,14 @@
 
 from glob import glob
 from json import dumps
-from logging import getLogger
+from logging import getLogger, basicConfig, INFO
 from os import path, environ, getcwd
 from yaml import load
 
 g_logger = getLogger(__name__)
+basicConfig(level=INFO,
+            format='%(asctime)s %(module)s:%(lineno)d [%(levelname)s] %(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S')
 
 
 DEFAULT_ENV = 'APP_ENV'
