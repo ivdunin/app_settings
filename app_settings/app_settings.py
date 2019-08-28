@@ -6,7 +6,7 @@ from glob import glob
 from json import dumps
 from logging import getLogger, basicConfig, INFO
 from os import path, environ, getcwd
-from yaml import load
+from yaml import load, FullLoader
 
 g_logger = getLogger(__name__)
 basicConfig(level=INFO,
@@ -83,7 +83,7 @@ class AppSettings(metaclass=Singleton):
         """ Load yml config from file """
         g_logger.debug('Load config file: %s', config_file)
         with open(config_file) as fp:
-            cfg = load(fp)
+            cfg = load(fp, Loader=FullLoader)
             if cfg:
                 self.__config.update(cfg)
 
