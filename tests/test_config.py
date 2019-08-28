@@ -171,4 +171,17 @@ def test_no_config_file(clear_config_instance, move_settings_yml, caplog):
 def test_flag_use_env_off(clear_config_instance, set_environ, move_config_to_custom_dir):
     """ Test that variables not overriding when use_env=False """
     cfg = clear_config_instance(use_env=False, configs_path=move_config_to_custom_dir)
-    assert 'false' == cfg.use_env
+    assert 'false' == cfg.use_env, 'Variable value overridden by env variable!'
+
+
+def test_raise_key_error_if_key_not_found(clear_config_instance, move_config_to_custom_dir):
+    """ Test that KeyError raised if key not found """
+    cfg = clear_config_instance(configs_path=move_config_to_custom_dir)
+    with pytest.raises(KeyError):
+        value = cfg.fake_value
+
+
+def test_no_key_error_exception(clear_config_instance, move_config_to_custom_dir):
+    """ Test that no Key Error raised if key not found and raise_error = false """
+    cfg = clear_config_instance(configs_path=move_config_to_custom_dir, raise_error=False)
+    assert cfg.key_not_exists is None, "Key value is not None"

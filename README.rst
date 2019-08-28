@@ -134,6 +134,19 @@ use ``use_env`` flag.
     from app_settings import AppSettings
     cfg = AppSettings(use_env=False)
 
+Suppress KeyError exception
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In case, if you don't want to receive KeyError exception if key not
+defined in file, you can use ``raise_error`` flag. By default: True
+
+.. code:: python
+
+    from app_settings import AppSettings
+    cfg = AppSettings(raise_error=False)
+
+    key = cfg.this_value_not_exist  # key == None
+
 Config path
 ~~~~~~~~~~~
 
@@ -153,8 +166,66 @@ Run tests
     cd app_settings
     python -m pytest -v --alluredir=./tests/results -n `nproc` --cov=app_settings --cov-config .coveragerc ./tests
 
+Sample usage for tests
+~~~~~~~~~~~~~~~~~~~~~~
+
+Run these commands to create sample files structure
+
+.. code:: bash
+
+    $ cd <your project dir> 
+    $ mkdir -p config/settings && \ 
+        touch config/settings.yml && \
+        touch config/settings/{production.yml,testing.yml} && \
+        echo "implicity_wait: 5" > config/settings.yml && \
+        echo 'search_text: "production environment"' > config/settings/production.yml && \
+        echo 'search_text: "testing environment"' > config/settings/testing.yml
+    $ touch test_with_app_settings.py
+
+Install all python requirements:
+
+.. code:: bash
+
+    pip install selenium pytest app_settings
+
+Copy code to ``test_with_app_settings.py``
+
+.. code:: python
+
+    ### Example, don't use it in your code
+    import os
+    os.environ['TEST_ENV'] = 'production'
+    ### example
+
+    import pytest
+    from app_settings import AppSettings
+    from selenium import webdriver
+
+
+    @pytest.fixture(scope='session')
+    def settings():
+        cfg = AppSettings(env_name='TEST_ENV')
+        return cfg
+
+
+    @pytest.fixture
+    def browser(settings):
+        driver = webdriver.Chrome()
+        driver.implicitly_wait(settings.implicity_wait)
+        yield driver
+        driver.close()
+
+
+    def test_example(browser, settings):
+        browser.get("https://ya.ru")
+        search_field = browser.find_element_by_id('text')
+        search_field.send_keys(settings.search_text)  # depending on env
+        search_button = browser.find_element_by_tag_name('button')
+        search_button.click()
+        browser.find_elements_by_css_selector("div ul li")
+
 TODO
 ----
 
 1. Add reload feature
-2. Do not raise error if setting not found in dictionary
+

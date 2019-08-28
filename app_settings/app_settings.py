@@ -49,11 +49,12 @@ class AppSettings(metaclass=Singleton):
         except KeyError:
             self._env_value = 'development'
 
-        g_logger.info('Config initialized! Environment variable: %s', self._env_value)
+        g_logger.info('Config initialized! Environment variable: %s=%s', self._env_name, self._env_value)
 
         config_location = kwargs.get('configs_path', path.join(getcwd(), 'config'))
         self._env_prefix = kwargs.get('prefix', DEFAULT_ENV_PREFIX).upper()
         self._env_splitter = kwargs.get('splitter', DEFAULT_SPLITTER)
+        self._raise_error = kwargs.get('raise_error', True)
 
         configs = glob(path.join(config_location, '*.yml'))
 
@@ -100,7 +101,14 @@ class AppSettings(metaclass=Singleton):
             self._set_config_value(keys, env_val, self.__config)
 
     def __getattr__(self, item):
-        return self.__config.__getattr__(item)
+        if self._raise_error:
+            return self.__config.__getattr__(item)
+        else:
+            try:
+                return self.__config.__getattr__(item)
+            except KeyError:
+                g_logger.warning(f'Key "{item}" not found!')
+                return
 
     def _set_config_value(self, keys, value, cfg=None):
         """ Set config value in config dict """
