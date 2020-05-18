@@ -119,6 +119,7 @@ class AppSettings(metaclass=Singleton):
         else:
             cfg[key] = value
 
+    @property
     def current_env(self):
         """ Get env of loaded config """
         return self._env_value

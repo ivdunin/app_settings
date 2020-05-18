@@ -23,7 +23,7 @@ def test_load_config_upon_env_name(clear_config_instance, set_environ, move_conf
     assert cfg.additional_settings, "Additional settings not loaded!"
     assert cfg.db, "Not all {}.*.yml files loaded!".format(env_value)
     assert cfg.__getattr__(env_value), '{} config not loaded!'.format(env_value)
-    assert env_value == cfg.current_env(), 'Incorrect config variable set!'
+    assert env_value == cfg.current_env, 'Incorrect config variable set!'
 
 
 @pytest.mark.usefixtures("init_default_configs")
@@ -33,7 +33,7 @@ def test_load_config_from_default_location(clear_config_instance):
 
     assert cfg.common, 'Settings not loaded!'
     assert cfg.additional_settings, "Additional settings not loaded!"
-    assert 'development' == cfg.current_env(), 'Incorrect config variable set!'
+    assert 'development' == cfg.current_env, 'Incorrect config variable set!'
 
 
 def test_load_config_when_no_default_location(clear_config_instance, caplog):
@@ -61,7 +61,7 @@ def test_load_config_from_custom_location(clear_config_instance, set_environ, mo
     assert cfg.common, 'Settings not loaded!'
     assert cfg.additional_settings, "Additional settings not loaded!"
     assert cfg.__getattr__(env_value), '{} config not loaded!'.format(env_value)
-    assert env_value == cfg.current_env(), 'Incorrect config variable set!'
+    assert env_value == cfg.current_env, 'Incorrect config variable set!'
 
 
 def test_read_variables(clear_config_instance, move_config_to_custom_dir):
