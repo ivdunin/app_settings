@@ -5,6 +5,8 @@ omit =
 [report]
 show_missing = True
 sort = Cover
+skip_empty = True
+fail_under = 95
 
 exclude_lines =
     pragma: no cover
