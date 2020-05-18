@@ -14,7 +14,7 @@ setup(
     packages=['app_settings'],
     long_description=long_description,
     install_requires=[
-        'PyYAML>=3.13',
+        'PyYAML>=5.1.2',
     ],
     zip_safe=False,
     include_package_data=True,
