@@ -1,5 +1,6 @@
-import pytest
 from re import search, compile
+
+import pytest
 
 
 @pytest.mark.parametrize(
@@ -185,3 +186,9 @@ def test_no_key_error_exception(clear_config_instance, move_config_to_custom_dir
     """ Test that no Key Error raised if key not found and raise_error = false """
     cfg = clear_config_instance(configs_path=move_config_to_custom_dir, raise_error=False)
     assert cfg.key_not_exists is None, "Key value is not None"
+
+
+def test_redefine_default_env_value(clear_config_instance, move_config_to_custom_dir):
+    """ Test that we can redefine default environment value """
+    cfg = clear_config_instance(default_env_value='autotest', configs_path=move_config_to_custom_dir, raise_error=False)
+    assert cfg.autotest.set, "Default environment not redefined!"

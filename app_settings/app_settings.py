@@ -6,6 +6,7 @@ from glob import glob
 from json import dumps
 from logging import getLogger, basicConfig, INFO
 from os import path, environ, getcwd
+
 from yaml import load, FullLoader
 
 g_logger = getLogger(__name__)
@@ -17,6 +18,7 @@ basicConfig(level=INFO,
 DEFAULT_ENV = 'APP_ENV'
 DEFAULT_ENV_PREFIX = 'SETTINGS'
 DEFAULT_SPLITTER = '__'
+DEFAULT_ENV_VALUE = 'development'
 
 
 class CustomDict(dict):
@@ -47,9 +49,9 @@ class AppSettings(metaclass=Singleton):
             self._env_name = kwargs.get('env_name', DEFAULT_ENV).upper()
             self._env_value = environ[self._env_name]
         except KeyError:
-            self._env_value = 'development'
+            self._env_value = kwargs.get('default_env_value', DEFAULT_ENV_VALUE)
 
-        g_logger.info('Config initialized! Environment variable: %s=%s', self._env_name, self._env_value)
+        g_logger.info(f'Config initialized! Environment variable: {self._env_name}={self._env_value}')
 
         config_location = kwargs.get('configs_path', path.join(getcwd(), 'config'))
         self._env_prefix = kwargs.get('prefix', DEFAULT_ENV_PREFIX).upper()
@@ -71,7 +73,7 @@ class AppSettings(metaclass=Singleton):
             for yml_file in sorted(env_configs):
                 self._load_config(yml_file)
         else:
-            g_logger.info('"{}*.yml" configs not found!'.format(self._env_value))
+            g_logger.info(f'"{self._env_value}*.yml" configs not found!')
 
         if kwargs.get('use_env', True):
             self._redefine_variables()
@@ -91,7 +93,7 @@ class AppSettings(metaclass=Singleton):
         """ Search for ENV variables with prefix and add them into config dict """
         for env_name in [key for key in environ.keys() if key.startswith(self._env_prefix)]:
             env_val = environ[env_name]
-            g_logger.debug('Found env variable: %s = %s', env_name, env_val)
+            g_logger.debug(f'Found env variable: {env_name} = {env_val}')
             keys = env_name.\
                 replace(self._env_prefix, '').\
                 lstrip(self._env_splitter).\
