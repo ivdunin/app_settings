@@ -50,6 +50,15 @@ from app_settings import AppSettings
 cfg = AppSettings(env_name='TEST_ENV')
 ```
 
+#### Default Environment value
+You can redefine default environment value (`development`).
+```python
+from app_settings import AppSettings
+
+cfg = AppSettings(default_env_value='autotest')
+```
+file `./config/settings/autotest.yml` will be loaded (if exist).
+
 ### Working with environment variables
 It is possible to redefine or set settings from environment variables. AppSettings will read all env variables with `SETTINGS` prefix (by default).
 ```yaml
@@ -176,5 +185,4 @@ def test_example(browser, settings):
 ```
 
 ## TODO
-1. Add ability to set default ENV value.
-2. Add reload feature
+1. Add reload feature

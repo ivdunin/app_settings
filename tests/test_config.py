@@ -1,5 +1,6 @@
-import pytest
 from re import search, compile
+
+import pytest
 
 
 @pytest.mark.parametrize(
@@ -23,7 +24,7 @@ def test_load_config_upon_env_name(clear_config_instance, set_environ, move_conf
     assert cfg.additional_settings, "Additional settings not loaded!"
     assert cfg.db, "Not all {}.*.yml files loaded!".format(env_value)
     assert cfg.__getattr__(env_value), '{} config not loaded!'.format(env_value)
-    assert env_value == cfg.current_env(), 'Incorrect config variable set!'
+    assert env_value == cfg.current_env, 'Incorrect config variable set!'
 
 
 @pytest.mark.usefixtures("init_default_configs")
@@ -33,7 +34,7 @@ def test_load_config_from_default_location(clear_config_instance):
 
     assert cfg.common, 'Settings not loaded!'
     assert cfg.additional_settings, "Additional settings not loaded!"
-    assert 'development' == cfg.current_env(), 'Incorrect config variable set!'
+    assert 'development' == cfg.current_env, 'Incorrect config variable set!'
 
 
 def test_load_config_when_no_default_location(clear_config_instance, caplog):
@@ -61,7 +62,7 @@ def test_load_config_from_custom_location(clear_config_instance, set_environ, mo
     assert cfg.common, 'Settings not loaded!'
     assert cfg.additional_settings, "Additional settings not loaded!"
     assert cfg.__getattr__(env_value), '{} config not loaded!'.format(env_value)
-    assert env_value == cfg.current_env(), 'Incorrect config variable set!'
+    assert env_value == cfg.current_env, 'Incorrect config variable set!'
 
 
 def test_read_variables(clear_config_instance, move_config_to_custom_dir):
@@ -185,3 +186,9 @@ def test_no_key_error_exception(clear_config_instance, move_config_to_custom_dir
     """ Test that no Key Error raised if key not found and raise_error = false """
     cfg = clear_config_instance(configs_path=move_config_to_custom_dir, raise_error=False)
     assert cfg.key_not_exists is None, "Key value is not None"
+
+
+def test_redefine_default_env_value(clear_config_instance, move_config_to_custom_dir):
+    """ Test that we can redefine default environment value """
+    cfg = clear_config_instance(default_env_value='autotest', configs_path=move_config_to_custom_dir, raise_error=False)
+    assert cfg.autotest.set, "Default environment not redefined!"
