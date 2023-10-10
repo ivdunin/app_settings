@@ -164,7 +164,7 @@ Run tests
 .. code:: bash
 
     cd app_settings
-    python -m pytest -v --alluredir=./tests/results -n `nproc` --cov=app_settings --cov-config .coveragerc ./tests
+    python -m pytest -v --alluredir=./tests/results -n auto --cov=app_settings --cov-config .coveragerc ./tests
 
 Sample usage for tests
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -228,4 +228,3 @@ TODO
 ----
 
 1. Add reload feature
-

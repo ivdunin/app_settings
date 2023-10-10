@@ -129,7 +129,7 @@ cfg = AppSettings(configs_path='my_config_path')
 ## Run tests
 ```bash
 cd app_settings
-python -m pytest -v --alluredir=./tests/results -n `nproc` --cov=app_settings --cov-config .coveragerc ./tests
+python -m pytest -v --alluredir=./tests/results -n auto --cov=app_settings --cov-config .coveragerc ./tests
 ```
 
 ### Sample usage for tests
